@@ -40,9 +40,9 @@ fun TodoApp() {
                 placeholder("What needs to be done?")
                 autoFocus()
                 value(newText)
-                onInput { viewModel.onNewTextChanged(it.value) }
+                onInput { viewModel.onNewTextChanged.send(it.value) }
                 onKeyDown {
-                    if (it.key == "Enter") viewModel.addTodo()
+                    if (it.key == "Enter") viewModel.addTodo.send(Unit)
                 }
             }
         }
@@ -55,7 +55,7 @@ fun TodoApp() {
                         id("toggle-all")
                         classes("toggle-all")
                         checked(activeCount == 0)
-                        onClick { viewModel.toggleAll() }
+                        onClick { viewModel.toggleAll.send(Unit) }
                     }
                     Label(forId = "toggle-all") { Text("Toggle All Input") }
                 }
@@ -70,14 +70,14 @@ fun TodoApp() {
                                 classes("edit")
                                 value(editText)
                                 autoFocus()
-                                onInput { viewModel.updateEditingText(it.value) }
+                                onInput { viewModel.updateEditingText.send(it.value) }
                                 onKeyDown {
                                     when (it.key) {
-                                        "Enter" -> viewModel.submitEdit(todo.id)
-                                        "Escape" -> viewModel.cancelEdit()
+                                        "Enter" -> viewModel.submitEdit.send(todo.id)
+                                        "Escape" -> viewModel.cancelEdit.send(Unit)
                                     }
                                 }
-                                onBlur { viewModel.submitEdit(todo.id) }
+                                onBlur { viewModel.submitEdit.send(todo.id) }
                             }
                         } else {
                             // Normal view
@@ -88,17 +88,17 @@ fun TodoApp() {
                                     Input(type = InputType.Checkbox) {
                                         classes("toggle")
                                         checked(todo.completed)
-                                        onClick { viewModel.toggleTodo(todo.id) }
+                                        onClick { viewModel.toggleTodo.send(todo.id) }
                                     }
                                     Label(attrs = {
                                         // listen for dblclick to start editing
-                                        onDoubleClick { viewModel.startEditing(todo.id) }
+                                        onDoubleClick { viewModel.startEditing.send(todo.id) }
                                     }) {
                                         Text(todo.text)
                                     }
                                     Button(attrs = {
                                         classes("destroy")
-                                        onClick { viewModel.deleteTodo(todo.id) }
+                                        onClick { viewModel.deleteTodo.send(todo.id) }
                                     }) { }
                                 }
                             }
@@ -126,7 +126,7 @@ fun TodoApp() {
                         Li(attrs = { if (filter == f) classes("selected") }) {
                             A(attrs = {
                                 href(href)
-                                onClick { viewModel.setFilter(f) }
+                                onClick { viewModel.setFilter.send(f) }
                             }) {
                                 Text(f.name)
                             }
@@ -136,7 +136,7 @@ fun TodoApp() {
                 if (completedCount > 0) {
                     Button(attrs = {
                         classes("clear-completed")
-                        onClick { viewModel.clearCompleted() }
+                        onClick { viewModel.clearCompleted.send(Unit) }
                     }) { Text("Clear completed") }
                 }
             }
