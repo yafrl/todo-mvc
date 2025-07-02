@@ -5,25 +5,31 @@ import arrow.core.some
 import io.github.yafrl.Signal
 import io.github.yafrl.externalEvent
 import io.github.yafrl.on
+import kotlin.jvm.JvmInline
 
+@JvmInline
 value class TodoID(val text: String)
+
 data class TodoItem(val id: TodoID, val text: String, val completed: Boolean)
 enum class TodoFilter { All, Active, Completed }
 
 class TodoMvcViewModel() {
     // -- External events --
 
+    // Global events
     val addTodo = externalEvent<Unit>("add_todo")
     val onNewTextChanged = externalEvent<String>("new_text_changed")
-    val toggleTodo = externalEvent<TodoID>("toggle_todo")
-    val deleteTodo = externalEvent<TodoID>("delete_todo")
     val toggleAll = externalEvent<Unit>("toggle_all")
     val clearCompleted = externalEvent<Unit>("clear_completed")
     val setFilter = externalEvent<TodoFilter>()
-    val startEditing = externalEvent<TodoID>("start_editing")
     val updateEditingText = externalEvent<String>("update_editing_text")
-    val submitEdit = externalEvent<TodoID>("submit_edit")
     val cancelEdit = externalEvent<Unit>("cancel_edit")
+
+    // Item events.
+    val toggleTodo = externalEvent<TodoID>("toggle_todo")
+    val deleteTodo = externalEvent<TodoID>("delete_todo")
+    val startEditing = externalEvent<TodoID>("start_editing")
+    val submitEdit = externalEvent<TodoID>("submit_edit")
 
     // -- UID generation --
     var latestUID = -1
@@ -99,8 +105,9 @@ class TodoMvcViewModel() {
 
     val editingText: Signal<String>  = Signal.fold("",
         on(updateEditingText) { _, newText -> newText },
-        on(startEditing) { _, id ->
-            val todoItem = allTodos.currentValue().first { it.id == id }
+        on(startEditing) { text, id ->
+            val todoItem = allTodos.currentValue()
+                .firstOrNull { it.id == id } ?: return@on text
 
             todoItem.text
         },
