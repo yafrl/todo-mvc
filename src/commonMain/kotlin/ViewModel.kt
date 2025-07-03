@@ -18,7 +18,7 @@ class TodoMvcViewModel() {
 
     // Global events
     val addTodo = externalEvent<Unit>("add_todo")
-    val onNewTextChanged = externalEvent<String>("new_text_changed")
+    val newTextChanged = externalEvent<String>("new_text_changed")
     val toggleAll = externalEvent<Unit>("toggle_all")
     val clearCompleted = externalEvent<Unit>("clear_completed")
     val setFilter = externalEvent<TodoFilter>()
@@ -79,7 +79,7 @@ class TodoMvcViewModel() {
     )
 
     val newTodoText: Signal<String> = Signal.fold("",
-        on(onNewTextChanged) { newText, _ -> newText },
+        on(newTextChanged) { _, newText -> newText },
         on(addTodo) { _, _ -> "" }
     )
 

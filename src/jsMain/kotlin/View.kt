@@ -40,7 +40,9 @@ fun TodoApp() {
                 placeholder("What needs to be done?")
                 autoFocus()
                 value(newText)
-                onInput { viewModel.onNewTextChanged.send(it.value) }
+                onInput {
+                    println("Sending ${it.value}")
+                    viewModel.newTextChanged.send(it.value) }
                 onKeyDown {
                     if (it.key == "Enter") viewModel.addTodo.send(Unit)
                 }
@@ -81,9 +83,7 @@ fun TodoApp() {
                             }
                         } else {
                             // Normal view
-                            Li(
-                                attrs = { if (todo.completed) classes("completed") }
-                            ) {
+                            Li(attrs = { if (todo.completed) classes("completed") }) {
                                 Div(attrs = { classes("view") }) {
                                     Input(type = InputType.Checkbox) {
                                         classes("toggle")
@@ -144,9 +144,7 @@ fun TodoApp() {
     }
 
     // Info section
-    Footer(attrs = {
-        classes("info")
-    }) {
+    Footer(attrs = { classes("info") }) {
         P { Text("Double-click to edit a todo") }
         P {
             Text("Written by ")
@@ -163,9 +161,7 @@ fun TodoApp() {
             }
         }
         P {
-            A(attrs = {
-                href("https://todomvc.com")
-            }) {
+            A(attrs = { href("https://todomvc.com") }) {
                 Text("Part of TodoMVC")
             }
         }

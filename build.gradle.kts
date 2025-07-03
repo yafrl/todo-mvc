@@ -17,7 +17,6 @@ repositories {
 kotlin {
     js(IR) {
         browser()
-        nodejs()
         binaries.executable()
     }
     jvm()
